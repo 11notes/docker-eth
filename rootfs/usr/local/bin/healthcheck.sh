@@ -1,2 +1,2 @@
-#!/bin/sh
-curl --max-time 5 -kILs --fail https://localhost:8545
+#!/bin/ash
+curl --max-time 5 -kILs --fail  -s -X POST -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1}' http://localhost:8545
