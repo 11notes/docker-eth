@@ -1,9 +1,8 @@
 #!/bin/ash
 if [ -z "$1" ]; then
-    echo "starting eth ..."
     set -- "geth" \
-        --datadir "/eth/var" \
-        --config "/eth/etc/config.toml"  \
+        --datadir "/geth/var" \
+        --config "/geth/etc/config.toml"  \
         --syncmode=snap \
         --cache 16384  \
         --txlookuplimit 0 \
@@ -20,11 +19,10 @@ if [ -z "$1" ]; then
 else
     case $1 in
         "prune")
-            echo "pruning eth ..."
             set -- "geth" \
                 snapshot \
                 prune-state \
-                --datadir "/eth/var"
+                --datadir "/geth/var"
 
             exec "$@"
         ;;

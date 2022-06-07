@@ -16,7 +16,7 @@
         make -j $(nproc);
 
 # :: Header
-	FROM alpine:3.14
+	FROM alpine:3.16
 	COPY --from=geth /go/go-ethereum/build/bin/ /usr/local/bin
 
 # :: Run
@@ -24,9 +24,9 @@
 
 	# :: prepare
         RUN set -ex; \
-            mkdir -p /eth; \
-            mkdir -p /eth/etc; \
-            mkdir -p /eth/var;
+            mkdir -p /geth; \
+            mkdir -p /geth/etc; \
+            mkdir -p /geth/var;
 
 		RUN set -ex; \
 			apk add --update --no-cache \
@@ -37,21 +37,25 @@
 				shadow;
 
 		RUN set -ex; \
-			addgroup --gid 1000 -S eth; \
-			adduser --uid 1000 -D -S -h /eth -s /sbin/nologin -G eth eth;
+			addgroup --gid 1000 -S geth; \
+			adduser --uid 1000 -D -S -h /geth -s /sbin/nologin -G geth geth;
 
     # :: copy root filesystem changes
         COPY ./rootfs /
 
     # :: docker -u 1000:1000 (no root initiative)
         RUN set -ex; \
-            chown -R eth:eth \
-				/eth
+            chown -R geth:geth \
+				/geth
 
 # :: Volumes
-	VOLUME ["/eth/etc", "/eth/var"]
+	VOLUME ["/geth/etc", "/geth/var"]
+
+# :: Monitor
+    RUN set -ex; chmod +x /usr/local/bin/healthcheck.sh
+    HEALTHCHECK CMD /usr/local/bin/healthcheck.sh || exit 1
 
 # :: Start
 	RUN set -ex; chmod +x /usr/local/bin/entrypoint.sh
-	USER eth
+	USER geth
 	ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
