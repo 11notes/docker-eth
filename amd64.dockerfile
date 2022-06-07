@@ -1,6 +1,6 @@
 # :: Build
 	FROM golang:alpine as geth
-	ENV ethVersion=v1.10.17
+	ENV ethVersion=v1.10.18
 
     RUN set -ex; \
         apk add --update --no-cache \
