@@ -8,11 +8,11 @@ if [ -z "$1" ]; then
         --txlookuplimit 0 \
         --ws \
             --ws.addr 0.0.0.0 \
-            --ws.api eth,web3 \
+            --ws.api eth,web3,txpool \
             --ws.origins '*' \
         --http \
             --http.addr 0.0.0.0 \
-            --http.api eth,web3 \
+            --http.api eth,web3,txpool \
             --http.corsdomain '*'
 
     exec "$@"
