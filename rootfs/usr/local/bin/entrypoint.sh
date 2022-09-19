@@ -13,7 +13,10 @@ if [ -z "$1" ]; then
         --http \
             --http.addr 0.0.0.0 \
             --http.api eth,web3,txpool \
-            --http.corsdomain '*'
+            --http.corsdomain '*' \
+        --authrpc.vhosts '*' \
+        --authrpc.jwtsecret /geth/etc/jwt
+
 
     exec "$@"
 else
