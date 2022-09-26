@@ -17,6 +17,12 @@ geth \
     --authrpc.vhosts '*' \
     --authrpc.jwtsecret /eth/geth/etc/jwt &
 
+until [ -f /eth/geth/etc/jwt ]
+do
+    echo "waiting for jwt file ..."
+    sleep 5
+done
+
 PRYSM_ALLOW_UNVERIFIED_BINARIES=1 /eth/prysm/bin/prysm beacon-chain \
     --datadir="/eth/prysm/var"\
     --execution-endpoint=http://localhost:8551 \
