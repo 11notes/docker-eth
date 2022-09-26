@@ -1,4 +1,5 @@
 #!/bin/sh
+(
     trap 'kill 0' SIGINT; 
         geth --datadir "/geth/var" \
             --config "/geth/etc/config.toml"  \
@@ -20,3 +21,4 @@
             --datadir /lighthouse/var \
             --execution-endpoint http://127.0.0.1:8545 \
             --execution-jwt /eth/etc/jwt
+)
