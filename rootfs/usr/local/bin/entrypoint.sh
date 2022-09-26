@@ -25,6 +25,6 @@ done
 lighthouse \
         bn \
         --network mainnet \
-        --datadir /lighthouse/var \
+        --datadir /eth/lighthouse/var \
         --execution-endpoint http://localhost:8551 \
         --execution-jwt /eth/geth/etc/jwt
