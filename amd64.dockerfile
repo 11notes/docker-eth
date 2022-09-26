@@ -1,6 +1,6 @@
 # :: Build
 	FROM golang:bullseye as geth
-	ENV gethVersion=v1.10.25
+	ENV checkout=v1.10.25
 
     RUN set -ex; \
         apt update -y; \
@@ -11,12 +11,33 @@
             git; \
         git clone https://github.com/ethereum/go-ethereum.git; \
         cd /go/go-ethereum; \
-		git checkout ${gethVersion}; \
+		git checkout ${checkout}; \
         make -j $(nproc);
+
+# :: Build
+	FROM rust:1.62.1-bullseye AS lighthouse
+	ENV checkout=v3.1.0
+    ENV FEATURES="gnosis,modern,slasher-lmdb"
+
+    RUN set -ex; \
+        apt-get update -y; \
+        apt-get -y upgrade -y; \
+        apt-get install -y \
+            make \
+            cmake \
+            g++ \
+            git \
+            libclang-dev; \
+        git clone https://github.com/sigp/lighthouse.git; \
+        cd /lighthouse; \
+		git checkout ${checkout}; \
+        make -j $(nproc);
+
 
 # :: Header
 	FROM ubuntu:22.04
 	COPY --from=geth /go/go-ethereum/build/bin/ /usr/local/bin
+    COPY --from=lighthouse /usr/local/cargo/bin/lighthouse /usr/local/bin/lighthouse
 
 # :: Run
 	USER root
@@ -26,17 +47,17 @@
             mkdir -p /eth/geth; \
             mkdir -p /eth/geth/etc; \
             mkdir -p /eth/geth/var; \
-            mkdir -p /eth/prysm/bin; \
-            mkdir -p /eth/prysm/etc; \
-            mkdir -p /eth/prysm/var;
+            mkdir -p /eth/lighthouse/etc; \
+            mkdir -p /eth/lighthouse/var;
 
 		RUN set -ex; \
-			apt update -y; \
-            apt install -y \
-				curl;
-
-        RUN set -ex; \
-            curl https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh --output /eth/prysm/bin/prysm && chmod +x /eth/prysm/bin/prysm;
+            apt-get update -y; \
+            apt-get -y upgrade -y; \
+            apt-get install -y --no-install-recommends \
+                libssl-dev \
+                ca-certificates; \
+            apt-get clean; \
+            rm -rf /var/lib/apt/lists/*;
 
 		RUN set -ex; \
             addgroup --gid 1000 eth; \
@@ -51,7 +72,7 @@
 				/eth
 
 # :: Volumes
-	VOLUME ["/geth/var"]
+	VOLUME ["/eth/geth/var", "/eth/lighthouse/var"]
 
 
 # :: Start
