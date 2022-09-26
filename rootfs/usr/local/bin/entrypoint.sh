@@ -20,7 +20,7 @@ geth \
 until [ -f /eth/geth/etc/jwt ]
 do
     echo "waiting for jwt file ..."
-    sleep 5
+    sleep l
 done
 
 PRYSM_ALLOW_UNVERIFIED_BINARIES=1 /eth/prysm/bin/prysm beacon-chain \
