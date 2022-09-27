@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/bin/sh
+
+WAN_IP=$(curl -s ifconfig.me)
+
 geth \
     --datadir "/eth/geth/var" \
     --config "/eth/geth/etc/config.toml"  \
@@ -12,19 +15,23 @@ geth \
     --http \
         --http.addr 0.0.0.0 \
         --http.api eth,web3,txpool \
-        --http.corsdomain '*' \
-    --authrpc.addr 127.0.0.1 \
-    --authrpc.jwtsecret /eth/geth/etc/jwt &
+        --http.corsdomain '*' &
 
-until [ -f /eth/geth/etc/jwt ]
+until [ -f /eth/geth/var/geth/jwtsecret ]
 do
-    echo "waiting for jwt file ..."
-    sleep 5
+    echo "wait for geth IPC to be ready ..."
+    sleep 1
 done
 
-lighthouse \
-        bn \
-        --network mainnet \
-        --datadir /eth/lighthouse/var \
-        --execution-endpoint http://localhost:8551 \
-        --execution-jwt /eth/geth/etc/jwt
+prysm \
+    --accept-terms-of-use \
+    --datadir "/eth/prysm/var" \
+    --restore-target-dir "/eth/prysm/var" \
+    --execution-endpoint http://127.0.0.1:8551 \
+    --jwt-secret /eth/geth/var/geth/jwtsecret \
+    --block-batch-limit 1024 \
+    --p2p-max-peers 1024 \
+    --slots-per-archive-point 8192 \
+    --max-goroutines 65536 \
+    --p2p-local-ip 0.0.0.0 \
+    --p2p-host-ip ${WAN_IP} 
