@@ -2,6 +2,8 @@
 
 WAN_IP=$(curl -s ifconfig.me)
 
+echo "starting geth on 0.0.0.0/32 with eth,web3,txpool"
+
 geth \
     --datadir "/eth/geth/var" \
     --config "/eth/geth/etc/config.toml"  \
@@ -23,6 +25,12 @@ do
     sleep 1
 done
 
+if [[ -z "${PRYSM_PORT}" ]]; then
+    PRYSM_PORT=13000
+fi
+
+echo "starting prysm on 0.0.0.0/32 (P2P ${WAN_IP}/32:${PRYSM_PORT})"
+
 prysm \
     --accept-terms-of-use \
     --datadir "/eth/prysm/var" \
@@ -34,4 +42,6 @@ prysm \
     --slots-per-archive-point 8192 \
     --max-goroutines 65536 \
     --p2p-local-ip 0.0.0.0 \
+    --p2p-tcp-port ${PRYSM_PORT} \
+    --p2p-udp-port ${PRYSM_PORT} \
     --p2p-host-ip ${WAN_IP} 
