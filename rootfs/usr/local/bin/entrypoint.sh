@@ -2,8 +2,6 @@
 
 WAN_IP=$(curl -s ifconfig.me)
 
-echo "starting geth on 0.0.0.0/32 with eth,web3,txpool"
-
 geth \
     --datadir "/eth/geth/var" \
     --config "/eth/geth/etc/config.toml"  \
@@ -17,11 +15,11 @@ geth \
     --http \
         --http.addr 0.0.0.0 \
         --http.api eth,web3,txpool \
-        --http.corsdomain '*' &
+        --http.corsdomain '*' \
+    --log.json > /eth/var/log/geth.log 2>&1
 
 until [ -f /eth/geth/var/geth/jwtsecret ]
 do
-    echo "wait for geth IPC to be ready ..."
     sleep 1
 done
 
@@ -29,7 +27,7 @@ if [[ -z "${PRYSM_PORT}" ]]; then
     PRYSM_PORT=13000
 fi
 
-echo "starting prysm on 0.0.0.0/32 (P2P ${WAN_IP}/32:${PRYSM_PORT})"
+
 
 prysm \
     --accept-terms-of-use \
@@ -44,4 +42,5 @@ prysm \
     --p2p-local-ip 0.0.0.0 \
     --p2p-tcp-port ${PRYSM_PORT} \
     --p2p-udp-port ${PRYSM_PORT} \
-    --p2p-host-ip ${WAN_IP} 
+    --p2p-host-ip ${WAN_IP} \
+    --log-format "json" > /eth/var/log/prysm.log 2>&1

@@ -24,7 +24,7 @@
 
 	# :: prepare
         RUN set -ex; \
-            mkdir -p /eth/geth; \
+            mkdir -p /eth/var/log; \
             mkdir -p /eth/geth/var; \
             mkdir -p /eth/prysm/var;
 
@@ -36,7 +36,8 @@
             apt-get install -y --no-install-recommends \
                 libssl-dev \
                 curl \
-                ca-certificates; \
+                ca-certificates \
+                tar; \
             apt-get clean; \
             rm -rf /var/lib/apt/lists/*; \
             chmod +x /usr/local/bin/prysm;
@@ -55,7 +56,7 @@
 				/eth
 
 # :: Volumes
-	VOLUME ["/eth/geth/var", "/eth/prysm/var"]
+	VOLUME ["/eth/geth/var", "/eth/prysm/var", "/eth/var/log"]
 
 
 # :: Start
