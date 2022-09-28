@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 WAN_IP=$(curl -s ifconfig.me)
 
@@ -16,7 +16,7 @@ geth \
         --http.addr 0.0.0.0 \
         --http.api eth,web3,txpool \
         --http.corsdomain '*' \
-    --log.json > /eth/var/log/geth.log 2>&1
+    --log.json > /eth/var/log/geth.log 2>&1 &
 
 until [ -f /eth/geth/var/geth/jwtsecret ]
 do
@@ -43,4 +43,4 @@ prysm \
     --p2p-tcp-port ${PRYSM_PORT} \
     --p2p-udp-port ${PRYSM_PORT} \
     --p2p-host-ip ${WAN_IP} \
-    --log-format "json" > /eth/var/log/prysm.log 2>&1
+    --log-format "json" & > /eth/var/log/prysm.log 2>&1 &
