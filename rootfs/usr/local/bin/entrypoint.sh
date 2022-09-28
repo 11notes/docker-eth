@@ -43,4 +43,8 @@ prysm \
     --p2p-tcp-port ${PRYSM_PORT} \
     --p2p-udp-port ${PRYSM_PORT} \
     --p2p-host-ip ${WAN_IP} \
-    --log-format "json" & > /eth/var/log/prysm.log 2>&1 &
+    --log-format "json" > /eth/var/log/prysm.log 2>&1 &
+
+
+    tail -f /eth/var/log/geth.log | sed 's/^/GETH: /' &
+    tail -f /eth/var/log/prysm.log | sed 's/^/PRYSM: /'
