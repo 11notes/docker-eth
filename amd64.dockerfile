@@ -1,10 +1,14 @@
 # :: Build
-	FROM golang:bullseye as geth
+	FROM golang:alpine as geth
 	ENV checkout=v1.10.25
 
     RUN set -ex; \
-        apt update -y; \
-        apt install -y \
+        apk add --update --no-cache \
+            curl \
+            wget \
+            unzip \
+			build-base \
+            linux-headers \
             make \
             cmake \
             g++ \
@@ -15,51 +19,43 @@
         make -j $(nproc);
 
 # :: Header
-	FROM ubuntu:22.04
+	FROM alpine:3.16
 	COPY --from=geth /go/go-ethereum/build/bin/ /usr/local/bin
-    ENV prysm=v3.1.1
 
 # :: Run
 	USER root
 
 	# :: prepare
         RUN set -ex; \
-            mkdir -p /eth/var/log; \
-            mkdir -p /eth/geth/var; \
-            mkdir -p /eth/prysm/var;
-
-        ADD https://github.com/prysmaticlabs/prysm/releases/download/${prysm}/beacon-chain-${prysm}-linux-amd64 /usr/local/bin/prysm
+            mkdir -p /geth; \
+            mkdir -p /geth/etc; \
+            mkdir -p /geth/var;
 
 		RUN set -ex; \
-            apt-get update -y; \
-            apt-get -y upgrade -y; \
-            apt-get install -y --no-install-recommends \
-                libssl-dev \
-                curl \
-                ca-certificates \
-                tar; \
-            apt-get clean; \
-            rm -rf /var/lib/apt/lists/*; \
-            chmod +x /usr/local/bin/prysm;
-
+			apk add --update --no-cache \
+				curl \
+				shadow;
 
 		RUN set -ex; \
-            addgroup --gid 1000 eth; \
-            useradd -d /eth -g 1000 -s /sbin/nologin -u 1000 eth;
+			addgroup --gid 1000 -S geth; \
+			adduser --uid 1000 -D -S -h /geth -s /sbin/nologin -G geth geth;
 
     # :: copy root filesystem changes
         COPY ./rootfs /
 
     # :: docker -u 1000:1000 (no root initiative)
         RUN set -ex; \
-            chown -R eth:eth \
-				/eth
+            chown -R geth:geth \
+				/geth
 
 # :: Volumes
-	VOLUME ["/eth/geth/var", "/eth/prysm/var", "/eth/var/log"]
+	VOLUME ["/geth/etc", "/geth/var"]
 
+# :: Monitor
+    RUN set -ex; chmod +x /usr/local/bin/healthcheck.sh
+    HEALTHCHECK CMD /usr/local/bin/healthcheck.sh || exit 1
 
 # :: Start
 	RUN set -ex; chmod +x /usr/local/bin/entrypoint.sh
-	USER eth
+	USER geth
 	ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
