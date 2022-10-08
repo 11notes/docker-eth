@@ -1,19 +1,24 @@
 #!/bin/ash
 if [ -z "$1" ]; then
     set -- "geth" \
-        --datadir "/eth/geth/var" \
-        --config "/eth/geth/etc/config.toml"  \
+        --datadir "/geth/var" \
+        --config "/geth/etc/config.toml"  \
         --syncmode=snap \
         --cache 65536  \
         --txlookuplimit 0 \
         --ws \
             --ws.addr 0.0.0.0 \
-            --ws.api eth,web3,txpool \
+            --ws.api net,eth,web3,txpool \
             --ws.origins '*' \
         --http \
             --http.addr 0.0.0.0 \
-            --http.api eth,web3,txpool \
-            --http.corsdomain '*'
+            --http.api net,eth,web3,txpool \
+            --http.corsdomain '*' \
+        --authrpc.addr 0.0.0.0 \
+        --authrpc.port 8551 \
+        --authrpc.vhosts '*' \
+        --maxpeers 512 \
+        --log.json
 fi
 
 exec "$@"

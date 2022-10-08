@@ -1,6 +1,6 @@
 # :: Build
 	FROM golang:alpine as geth
-	ENV checkout=v1.10.25
+	ENV checkout=master
 
     RUN set -ex; \
         apk add --update --no-cache \
