@@ -49,6 +49,9 @@ docker run --name eth \
                 --metrics.influxdb.tags "host=geth01"
 ```
 
+## Docker -u 1000:1000 (no root initiative)
+As part to make containers more secure, this container will not run as root, but as uid:gid 1000:1000. Therefore, you have to make sure that all volumes you mount into the container are owned by the uid/gid.
+
 ## Tipps
 * Use storage capable of 10k IOPS at 4kQD1 (no cache!) like Samsung 980 Pro
 * Use as much cache as you can give, this will speed up state heal
