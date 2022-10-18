@@ -49,7 +49,7 @@
 				/geth
 
 # :: Volumes
-	VOLUME ["/geth/etc", "/geth/var"]
+	VOLUME ["/geth/var"]
 
 # :: Monitor
     RUN set -ex; chmod +x /usr/local/bin/healthcheck.sh

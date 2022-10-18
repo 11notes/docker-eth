@@ -4,7 +4,7 @@ if [ -z "$1" ]; then
         --datadir "/geth/var" \
         --config "/geth/etc/config.toml"  \
         --syncmode=snap \
-        --cache 65536  \
+        --cache 66560  \
         --txlookuplimit 0 \
         --ws \
             --ws.addr 0.0.0.0 \
