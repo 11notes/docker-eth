@@ -56,6 +56,6 @@ As part to make containers more secure, this container will not run as root, but
 * Use storage capable of 10k IOPS at 4kQD1 (no cache!) like Samsung 980 Pro
 * Use as much cache as you can give, this will speed up state heal
 
-## Build with
+## Built with
 * [ethereum/go-ethereum](https://github.com/ethereum/go-ethereum) - Official Go implementation of the Ethereum protocol
 * [Alpine Linux](https://alpinelinux.org/) - Alpine Linux
