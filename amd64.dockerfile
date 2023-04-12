@@ -1,6 +1,6 @@
 # :: Build
 	FROM golang:alpine as geth
-	ENV checkout=v1.10.26
+	ENV checkout=v1.11.5
 
     RUN set -ex; \
         apk add --update --no-cache \
@@ -19,7 +19,7 @@
         make -j $(nproc);
 
 # :: Header
-	FROM alpine:3.16
+	FROM alpine:latest
 	COPY --from=geth /go/go-ethereum/build/bin/ /usr/local/bin
 
 # :: Run
