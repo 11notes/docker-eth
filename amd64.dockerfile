@@ -3,20 +3,20 @@
   ENV checkout=v1.11.6
 
   RUN set -ex; \
-  apk add --update --no-cache \
-  curl \
-  wget \
-  unzip \
-  build-base \
-  linux-headers \
-  make \
-  cmake \
-  g++ \
-  git; \
-  git clone https://github.com/ethereum/go-ethereum.git; \
-  cd /go/go-ethereum; \
-  git checkout ${checkout}; \
-  make -j $(nproc);
+    apk add --update --no-cache \
+      curl \
+      wget \
+      unzip \
+      build-base \
+      linux-headers \
+      make \
+      cmake \
+      g++ \
+      git; \
+    git clone https://github.com/ethereum/go-ethereum.git; \
+    cd /go/go-ethereum; \
+    git checkout ${checkout}; \
+    make -j $(nproc);
 
 # :: Header
   FROM alpine:latest
