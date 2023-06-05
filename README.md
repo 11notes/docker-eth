@@ -1,62 +1,74 @@
-# Info
-Official Go implementation of the Ethereum protocol. 
+# Alpine :: Ethereum
 
-This container provides an easy and simple way to use geth without the hassle of library dependencies and compiling the source yourself.
+Run an Ethereum node based on Alpine Linux. Small, lightweight, secure and fast.
 
 ## Volumes
-* /geth/var - Purpose: Holds all chain data
+* **/geth/etc** - Directory of config.toml
+* **/geth/var** - Directory of all blockchain data
 
 ## Run
 ```shell
 docker run --name eth \
-  -v /.../var:/geth/var \
+  -v ../geth/etc:/geth/etc \
+  -v ../geth/var:/geth/var \
   -d 11notes/eth:[tag]
 ```
 
-# Examples run
 ```shell
+# start container with custom configuration
 docker run --name eth \
-  -v /.../var:/geth/var \
+  -v ../geth/var:/geth/var \
   -d 11notes/eth:[tag] \
     geth \
-    --datadir "/geth/var" \
-    --config "/geth/etc/config.toml" \
-    --syncmode=snap \
-    --cache 66560  \
-    --bloomfilter.size 16384 \
-    --txlookuplimit 0 \
-    --ws \
-      --ws.addr 0.0.0.0 \
-      --ws.api net,eth,web3,txpool \
-      --ws.origins '*' \
-    --http \
-      --http.addr 0.0.0.0 \
-      --http.api net,eth,web3,txpool \
-      --http.corsdomain '*' \
-    --authrpc.addr 0.0.0.0 \
-    --authrpc.port 8551 \
-    --authrpc.vhosts '*' \
-    --maxpeers 512 \
-    --nat extip:13.224.103.127 \
-    --log.json \
-    --metrics \
-      --metrics.expensive \
-      --metrics.influxdbv2 \
-      --metrics.influxdb.endpoint "http://localhost:8086" \
-      --metrics.influxdb.token "******************************************" \
-      --metrics.influxdb.organization "ethereum" \
-      --metrics.influxdb.bucket "geth" \
-      --metrics.influxdb.tags "host=geth01"
+      --datadir "/geth/var" \
+      --config "/geth/etc/config.toml"  \
+      --syncmode=snap \
+      --cache 66560  \
+      --bloomfilter.size 16384 \
+      --txlookuplimit 0 \
+      --ws \
+        --ws.addr 0.0.0.0 \
+        --ws.api net,eth,web3,txpool \
+        --ws.origins '*' \
+      --http \
+        --http.addr 0.0.0.0 \
+        --http.api net,eth,web3,txpool \
+        --http.corsdomain '*' \
+      --authrpc.addr 0.0.0.0 \
+      --authrpc.port 8551 \
+      --authrpc.vhosts '*' \
+      --maxpeers 512 \
+      --nat extip:${ETH_WAN_IP} \
+      --log.json \
+      --metrics \
+        --metrics.expensive \
+        --metrics.influxdbv2 \
+        --metrics.influxdb.endpoint "http://127.0.0.1:8086" \
+        --metrics.influxdb.token "***********************" \
+        --metrics.influxdb.organization "Ethereum" \
+        --metrics.influxdb.bucket "blockchain" \
+        --metrics.influxdb.tags "host=eth"
+
+# stop container
+docker stop -t 600 eth
 ```
 
-## Docker -u 1000:1000 (no root initiative)
-As part to make containers more secure, this container will not run as root, but as uid:gid 1000:1000. Therefore, you have to make sure that all volumes you mount into the container are owned by the uid/gid.
+## Defaults
+| Parameter | Value | Description |
+| --- | --- | --- |
+| `user` | docker | user docker |
+| `uid` | 1000 | user id 1000 |
+| `gid` | 1000 | group id 1000 |
 
-## Tipps
-* Use storage capable of 10k IOPS at 4kQD1 (no cache!) like Samsung 980 Pro
-* Use as much cache as you can give, this will speed up state heal
-* Don't kill the container, use -t 600 as a safety net to flush RAM to disk
+## Parent
+* [11notes/alpine:stable](https://github.com/11notes/docker-alpine)
 
 ## Built with
-* [ethereum/go-ethereum](https://github.com/ethereum/go-ethereum) - Official Go implementation of the Ethereum protocol
-* [alpine linux](https://alpinelinux.org/) - Alpine Linux
+* [Ethereum](https://github.com/ethereum/go-ethereum)
+* [Alpine Linux](https://alpinelinux.org/)
+
+## Tips
+* Increase cache as much as you can (64GB+ recommended)
+* Don't kill container, stop gracefully with enough time to sync RAM to disk!
+* Don't bind to ports < 1024 (requires root), use NAT/reverse proxy
+* [Permanent Stroage](https://github.com/11notes/alpine-docker-netshare) - Module to store permanent container data via NFS/CIFS and more

@@ -1,6 +1,6 @@
 # :: Build
-  FROM golang:alpine as base
-  ENV checkout=v1.11.6
+  FROM golang:alpine as build
+  ENV checkout=v1.12.0
 
   RUN set -ex; \
     apk add --update --no-cache \
@@ -19,43 +19,40 @@
     make -j $(nproc);
 
 # :: Header
-  FROM alpine:latest
-  COPY --from=base /go/go-ethereum/build/bin/ /usr/local/bin
+FROM 11notes/alpine:stable
+COPY --from=build /go/go-ethereum/build/bin/ /usr/local/bin
 
 # :: Run
   USER root
 
-  # :: prepare
+  # :: update image
+    RUN set -ex; \
+      apk update; \
+      apk upgrade;
+
+  # :: prepare image
     RUN set -ex; \
       mkdir -p /geth; \
       mkdir -p /geth/etc; \
       mkdir -p /geth/var;
 
-    RUN set -ex; \
-      apk add --update --no-cache \
-        curl \
-        shadow;
-
-    RUN set -ex; \
-      addgroup --gid 1000 -S geth; \
-      adduser --uid 1000 -D -S -h /geth -s /sbin/nologin -G geth geth;
-
-  # :: copy root filesystem changes
+  # :: copy root filesystem changes and add execution rights to init scripts
     COPY ./rootfs /
-
-  # :: docker -u 1000:1000 (no root initiative)
     RUN set -ex; \
-      chown -R geth:geth \
-        /geth
+      chmod +x -R /usr/local/bin
+
+  # :: change home path for existing user and set correct permission
+    RUN set -ex; \
+      usermod -d /geth docker; \
+      chown -R 1000:1000 \
+        /geth;
 
 # :: Volumes
-  VOLUME ["/geth/var"]
+  VOLUME ["/geth/etc", "/geth/var"]
 
 # :: Monitor
-  RUN set -ex; chmod +x /usr/local/bin/healthcheck.sh
   HEALTHCHECK CMD /usr/local/bin/healthcheck.sh || exit 1
 
 # :: Start
-  RUN set -ex; chmod +x /usr/local/bin/entrypoint.sh
-  USER geth
+  USER docker
   ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
