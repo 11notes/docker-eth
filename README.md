@@ -46,7 +46,7 @@ docker run --name eth \
         --metrics.influxdb.endpoint "http://127.0.0.1:8086" \
         --metrics.influxdb.token "***********************" \
         --metrics.influxdb.organization "Ethereum" \
-        --metrics.influxdb.bucket "blockchain" \
+        --metrics.influxdb.bucket "eth" \
         --metrics.influxdb.tags "host=eth"
 
 # stop container
