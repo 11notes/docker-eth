@@ -1,6 +1,7 @@
 # Alpine :: Ethereum
+![size](https://img.shields.io/docker/image-size/11notes/ethr/1.13.4?color=0eb305) ![version](https://img.shields.io/docker/v/11notes/ethr?color=eb7a09) ![pulls](https://img.shields.io/docker/pulls/11notes/ethr?color=2b75d6) ![activity](https://img.shields.io/github/commit-activity/m/11notes/docker-ethr?color=c91cb8) ![commit-last](https://img.shields.io/github/last-commit/11notes/docker-ethr?color=c91cb8)
 
-Run an Ethereum node based on Alpine Linux. Small, lightweight, secure and fast.
+Run an Ethereum node based on Alpine Linux. Small, lightweight, secure and fast 🏔️
 
 ## Volumes
 * **/geth/etc** - Directory of config.toml
@@ -9,8 +10,8 @@ Run an Ethereum node based on Alpine Linux. Small, lightweight, secure and fast.
 ## Run
 ```shell
 docker run --name eth \
-  -v ../geth/etc:/geth/etc \
-  -v ../geth/var:/geth/var \
+  -v .../etc:/geth/etc \
+  -v .../var:/geth/var \
   -d 11notes/eth:[tag]
 ```
 
@@ -59,16 +60,17 @@ docker stop -t 600 eth
 | `user` | docker | user docker |
 | `uid` | 1000 | user id 1000 |
 | `gid` | 1000 | group id 1000 |
+| `home` | /geth | home directory of user docker |
 
-## Parent
+## Parent image
 * [11notes/alpine:stable](https://github.com/11notes/docker-alpine)
 
-## Built with
+## Built with and thanks to
 * [Ethereum](https://github.com/ethereum/go-ethereum)
 * [Alpine Linux](https://alpinelinux.org/)
 
 ## Tips
 * Increase cache as much as you can (64GB+ recommended)
 * Don't kill container, stop gracefully with enough time to sync RAM to disk!
-* Don't bind to ports < 1024 (requires root), use NAT/reverse proxy
-* [Permanent Stroage](https://github.com/11notes/alpine-docker-netshare) - Module to store permanent container data via NFS/CIFS and more
+* Only use rootless container runtime (podman, rootless docker)
+* Don't bind to ports < 1024 (requires root), use NAT/reverse proxy (haproxy, traefik, nginx)

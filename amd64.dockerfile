@@ -1,9 +1,9 @@
 # :: Build
   FROM golang:alpine as build
-  ENV checkout=v1.12.0
+  ENV checkout=v1.13.4
 
   RUN set -ex; \
-    apk add --update --no-cache \
+    apk add --no-cache \
       curl \
       wget \
       unzip \
@@ -20,6 +20,7 @@
 
 # :: Header
 FROM 11notes/alpine:stable
+ENV APP_ROOT=/geth
 COPY --from=build /go/go-ethereum/build/bin/ /usr/local/bin
 
 # :: Run
@@ -27,14 +28,13 @@ COPY --from=build /go/go-ethereum/build/bin/ /usr/local/bin
 
   # :: update image
     RUN set -ex; \
-      apk update; \
-      apk upgrade;
+      apk --no-cache upgrade;
 
   # :: prepare image
     RUN set -ex; \
-      mkdir -p /geth; \
-      mkdir -p /geth/etc; \
-      mkdir -p /geth/var;
+      mkdir -p ${APP_ROOT}; \
+      mkdir -p ${APP_ROOT}/etc; \
+      mkdir -p ${APP_ROOT}/var;
 
   # :: copy root filesystem changes and add execution rights to init scripts
     COPY ./rootfs /
@@ -43,12 +43,12 @@ COPY --from=build /go/go-ethereum/build/bin/ /usr/local/bin
 
   # :: change home path for existing user and set correct permission
     RUN set -ex; \
-      usermod -d /geth docker; \
+      usermod -d ${APP_ROOT} docker; \
       chown -R 1000:1000 \
-        /geth;
+        ${APP_ROOT};
 
 # :: Volumes
-  VOLUME ["/geth/etc", "/geth/var"]
+  VOLUME ["${APP_ROOT}/etc", "${APP_ROOT}/var"]
 
 # :: Monitor
   HEALTHCHECK CMD /usr/local/bin/healthcheck.sh || exit 1
