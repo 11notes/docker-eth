@@ -18,7 +18,7 @@
       --authrpc.port 8551 \
       --authrpc.vhosts '*' \
       --maxpeers 512 \
-      --log.json
+      --log.format=json
   fi
 
   exec "$@"

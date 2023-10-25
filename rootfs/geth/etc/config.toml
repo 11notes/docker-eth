@@ -7,12 +7,9 @@ NoPruning = false
 NoPrefetch = false
 TxLookupLimit = 2350000
 LightPeers = 100
-UltraLightFraction = 75
 DatabaseCache = 512
 DatabaseFreezer = ""
 TrieCleanCache = 154
-TrieCleanCacheJournal = "triecache"
-TrieCleanCacheRejournal = 3600000000000
 TrieDirtyCache = 256
 TrieTimeout = 3600000000000
 SnapshotCache = 102
@@ -27,18 +24,6 @@ GasFloor = 0
 GasCeil = 8000000
 GasPrice = 1000000000
 Recommit = 3000000000
-Noverify = false
-
-[Eth.Ethash]
-CacheDir = "ethash"
-CachesInMem = 2
-CachesOnDisk = 3
-CachesLockMmap = false
-DatasetsInMem = 1
-DatasetsOnDisk = 2
-DatasetsLockMmap = false
-PowMode = 0
-NotifyFull = false
 
 [Eth.TxPool]
 Locals = []
